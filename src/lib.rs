@@ -1,5 +1,9 @@
+//#![feature(test)]
+//extern crate test;
+
 use std::{fs, i32};
 use std::path::Path;
+use std::collections::HashMap;
 
 pub fn day_1_A(file_path : &str) -> (i32, Vec<i32>, Vec<i32>) {
     //let current_dir = env::current_dir().expect("Failed to get current directory");
@@ -31,12 +35,28 @@ pub fn day_1_A(file_path : &str) -> (i32, Vec<i32>, Vec<i32>) {
     for (num1, num2) in l1.iter().zip(l2.iter()) {
         distance = distance + i32::abs(num1-num2);
     }
-    println!("{:?}", distance);
+    //println!("{:?}", distance);
     return (distance, l1, l2);
 }
 
-pub fn day_1_B(l1: Vec<i32>, l2: Vec<i32>) -> i32 {
-    return i32::MIN  
+pub fn day_1_B(l1: &Vec<i32>, l2: &Vec<i32>) -> i32 {
+    //let mut h1: HashMap<i32,i32> = HashMap::new();
+    let mut h2: HashMap<i32,i32> = HashMap::new();
+    //for &i in &l1 {
+    //    *h1.entry(i).or_insert(0) += 1;
+    //}
+    for &i in l2 {
+        *h2.entry(i).or_insert(0) += 1;
+    }
+    let mut scores: Vec<i32> = Vec::new();
+    for &i in l1 {
+        if h2.contains_key(&i) {
+            scores.push(&i * h2.get(&i).unwrap());
+        }
+    }
+    //println!("{:?}", &l2);
+
+    return scores.iter().sum();
 }
 
 pub fn add(left: usize, right: usize) -> usize {
@@ -45,7 +65,10 @@ pub fn add(left: usize, right: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
+    use std::thread::sleep;
+
     use super::*;
+    //use test::Bencher;
 
     #[test]
     fn it_works() {
@@ -57,11 +80,16 @@ mod tests {
         let (distance, _l1, _l2) = day_1_A("./data/day1.txt");
         assert!(distance == 2375403);
     }
-    
     #[test]
     fn test_day1_B() {
         let (distance, l1, l2) = day_1_A("./data/day1.txt");
-
-        assert!(distance == 2375403);
+        assert!(day_1_B(&l1, &l2) == 23082277);
     }
+    
+    //#[bench]
+    //fn bench_day1_B(b: &mut Bencher) {
+    //    let (distance, l1, l2) = day_1_A("./data/day1.txt");
+    //    b.iter(|| day_1_B(&l1,&l2));
+    //    assert!(day_1_B(&l1, &l2) == 23082277);
+    //}
 }
